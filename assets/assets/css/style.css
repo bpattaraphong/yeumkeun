@@ -1,0 +1,57 @@
+
+/* YEUMKEUN Admin - Clean Dashboard Theme */
+:root {
+  --navy: #14213d;
+  --blue: #3568dc;
+  --background: #f3f6fb;
+  --text: #1d2939;
+  --muted: #718096;
+  --border: #e7ecf3;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: 'Prompt', sans-serif;
+}
+.topbar {
+  background: var(--navy);
+  color: white;
+  padding: 16px 5%;
+  box-shadow: 0 3px 12px #17233d18;
+}
+.panel, .stat-card, .request-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 18px #17233d08;
+}
+.page {
+  width: min(1200px, 92%);
+  margin: 32px auto;
+}
+h1, h2, h3 { color: var(--text); }
+.muted, .stat-label { color: var(--muted); }
+.btn-primary {
+  background: var(--blue);
+  color: white;
+  border: 0;
+  border-radius: 10px;
+}
+.request-card { padding: 20px; }
+.stat-card { padding: 18px; }
+.status-badge {
+  display: inline-block;
+  border-radius: 30px;
+  padding: 5px 12px;
+  font-size: 12px;
+  background: #eef2f7;
+}
+.hidden { display: none !important; }
+input, select {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px;
+}
+button { cursor: pointer; }
