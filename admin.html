@@ -2,332 +2,168 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>YEUMKEUN | Admin Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --navy:#101d3a;
-  --blue:#2563eb;
-  --light:#f3f6fc;
-  --text:#17233d;
-  --muted:#718096;
-  --border:#e5eaf3;
-}
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  font-family:'Prompt',sans-serif;
-  color:var(--text);
-  background:var(--light);
-}
-button,input,select { font:inherit; }
-button { cursor:pointer; }
-.topbar {
-  background:var(--navy);
-  color:white;
-  padding:15px 5%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-}
-.brand {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  color:white;
-  text-decoration:none;
-}
-.brand-icon {
-  background:#263d68;
-  border-radius:13px;
-  padding:10px;
-  font-size:25px;
-}
-.brand strong { display:block; font-size:20px; letter-spacing:1px; }
-.brand small { color:#a9bbdc; font-size:10px; letter-spacing:2px; }
-.topbar nav a { color:#dbeafe; text-decoration:none; font-size:13px; }
-.page {
-  width:min(1200px,92%);
-  margin:32px auto 60px;
-}
-.dashboard-head {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
-  flex-wrap:wrap;
-  margin-bottom:26px;
-}
-.eyebrow {
-  color:var(--blue);
-  font-size:11px;
-  font-weight:700;
-  letter-spacing:2px;
-}
-h1 { font-size:27px; margin:5px 0; }
-.muted { color:var(--muted); font-size:13px; margin:4px 0; }
-.dashboard-actions { display:flex; gap:9px; flex-wrap:wrap; }
-.btn {
-  border:0;
-  border-radius:10px;
-  padding:10px 16px;
-  font-size:13px;
-  font-weight:500;
-}
-.btn-primary { background:var(--blue); color:white; }
-.btn-outline { background:white; color:var(--text); border:1px solid var(--border); }
-.btn-dark { background:#26344f; color:white; }
-.btn:hover { filter:brightness(.96); }
-.btn:disabled { opacity:.5; cursor:not-allowed; }
-.panel {
-  background:white;
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:25px;
-  box-shadow:0 5px 20px rgba(30,50,90,.04);
-}
-.hidden { display:none !important; }
-.login-panel {
-  max-width:460px;
-  margin:60px auto;
-}
-.login-panel h2 { margin-top:0; }
-.stack-form { display:grid; gap:15px; }
-.stack-form label { font-size:13px; font-weight:500; }
-.stack-form input {
-  display:block;
-  width:100%;
-  margin-top:7px;
-  padding:12px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  outline:none;
-}
-.stack-form input:focus,
-.filter-row input:focus,
-.filter-row select:focus { border-color:var(--blue); }
-.stats {
-  display:grid;
-  grid-template-columns:repeat(5,minmax(0,1fr));
-  gap:13px;
-  margin-bottom:25px;
-}
-.stat-card {
-  background:white;
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:17px;
-  min-width:0;
-}
-.stat-card .stat-label { color:var(--muted); font-size:12px; }
-.stat-card .stat-value { font-size:27px; font-weight:700; margin-top:5px; }
-.stat-card .stat-icon { font-size:20px; margin-bottom:8px; }
-.filter-panel {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  flex-wrap:wrap;
-  margin-bottom:17px;
-}
-.filter-title { font-size:17px; font-weight:600; }
-.filter-row { display:flex; gap:10px; flex-wrap:wrap; }
-.filter-row input,.filter-row select {
-  background:white;
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:11px 13px;
-  min-width:190px;
-  outline:none;
-  color:var(--text);
-}
-.requests-list { display:grid; gap:13px; }
-.request-card {
-  background:white;
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:19px;
-  transition:.2s;
-}
-.request-card:hover {
-  border-color:#b9cdfa;
-  box-shadow:0 5px 15px rgba(30,70,150,.06);
-}
-.request-heading {
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:12px;
-  flex-wrap:wrap;
-}
-.request-heading h3 { margin:0 0 5px; font-size:16px; }
-.status-badge {
-  display:inline-block;
-  border-radius:30px;
-  padding:5px 11px;
-  font-size:11px;
-  font-weight:600;
-  background:#eef2f7;
-  color:#475569;
-}
-.request-info {
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:12px;
-  margin:17px 0;
-}
-.info-item {
-  background:#f7f9fd;
-  border-radius:10px;
-  padding:11px;
-  min-width:0;
-}
-.info-item small {
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  margin-bottom:4px;
-}
-.info-item strong { font-size:13px; overflow-wrap:anywhere; }
-.request-actions {
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  border-top:1px solid var(--border);
-  padding-top:14px;
-}
-.request-actions button {
-  border:0;
-  border-radius:8px;
-  padding:8px 13px;
-  font-size:12px;
-  font-weight:500;
-}
-.request-actions button:hover { filter:brightness(.95); }
-.empty-state {
-  text-align:center;
-  padding:45px 15px;
-  color:var(--muted);
-  background:white;
-  border:1px dashed #cbd5e1;
-  border-radius:15px;
-}
-.empty-state .empty-icon { font-size:38px; margin-bottom:10px; }
-#adminLoginMessage { font-size:13px; margin-top:12px; }
-footer {
-  text-align:center;
-  color:var(--muted);
-  padding:25px;
-  font-size:12px;
-}
-@media(max-width:900px) {
-  .stats { grid-template-columns:repeat(3,minmax(0,1fr)); }
-}
-@media(max-width:600px) {
-  .page { width:94%; margin-top:22px; }
-  .panel { padding:17px; }
-  h1 { font-size:22px; }
-  .stats { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
-  .stat-card { padding:13px; }
-  .stat-card .stat-value { font-size:23px; }
-  .filter-row { display:grid; width:100%; }
-  .filter-row input,.filter-row select { width:100%; }
-  .request-info { grid-template-columns:1fr 1fr; }
-  .dashboard-actions { width:100%; }
-  .dashboard-actions button { flex:1; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YEUMKEUN | Admin Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- เชื่อมต่อ CSS -->
+  <link rel="stylesheet" href="assets/assets/css/style.css">
+
 </head>
 <body>
 
-<header class="topbar">
-  <a class="brand" href="index.html">
-    <span class="brand-icon">📦</span>
-    <span><strong>YEUMKEUN</strong><small>ADMINISTRATION SYSTEM</small></span>
-  </a>
-  <nav><a href="index.html">← กลับหน้าหลัก</a></nav>
-</header>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-icon">📦</span>
+      <span>
+        <strong>YEUMKEUN</strong>
+        <small>ADMIN MANAGEMENT SYSTEM</small>
+      </span>
+    </a>
+    <nav>
+      <a href="index.html">← กลับหน้าหลัก</a>
+    </nav>
+  </header>
 
-<main class="page">
+  <main class="page">
 
-  <section id="adminLoginPanel" class="panel login-panel">
-    <div style="font-size:35px">🔐</div>
-    <h2>เข้าสู่ระบบผู้ดูแล</h2>
-    <p class="muted">สำหรับครูและผู้ดูแลระบบ YEUMKEUN</p>
-    <form id="adminLoginForm" class="stack-form">
-      <label>อีเมล
-        <input id="adminEmail" type="email" required autocomplete="username" placeholder="กรอกอีเมล">
-      </label>
-      <label>รหัสผ่าน
-        <input id="adminPassword" type="password" required autocomplete="current-password" placeholder="กรอกรหัสผ่าน">
-      </label>
-      <button id="adminLoginButton" class="btn btn-primary" type="submit">เข้าสู่ระบบ →</button>
-    </form>
-    <div id="adminLoginMessage" aria-live="polite"></div>
-  </section>
+    <!-- LOGIN -->
+    <section id="adminLoginPanel" class="panel login-panel">
+      <div style="font-size:36px">🔐</div>
+      <h2>เข้าสู่ระบบผู้ดูแล</h2>
+      <p class="muted">สำหรับครูและผู้ดูแลระบบ YEUMKEUN</p>
 
-  <section id="adminDashboard" class="hidden">
+      <form id="adminLoginForm" class="stack-form">
+        <label>
+          อีเมล
+          <input
+            id="adminEmail"
+            type="email"
+            required
+            autocomplete="username"
+            placeholder="กรอกอีเมล"
+          >
+        </label>
 
-    <div class="dashboard-head">
-      <div>
-        <span class="eyebrow">YEUMKEUN MANAGEMENT</span>
-        <h1>จัดการระบบยืม–คืนอุปกรณ์</h1>
-        <p id="adminWelcome" class="muted">ยินดีต้อนรับเข้าสู่ระบบผู้ดูแล</p>
-      </div>
-      <div class="dashboard-actions">
-        <button id="adminRefresh" class="btn btn-outline" type="button">↻ รีเฟรชข้อมูล</button>
-        <button id="adminLogout" class="btn btn-dark" type="button">ออกจากระบบ</button>
-      </div>
-    </div>
+        <label>
+          รหัสผ่าน
+          <input
+            id="adminPassword"
+            type="password"
+            required
+            autocomplete="current-password"
+            placeholder="กรอกรหัสผ่าน"
+          >
+        </label>
 
-    <div id="adminStats" class="stats">
-      <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-label">คำขอทั้งหมด</div><div class="stat-value">—</div></div>
-      <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-label">รอตรวจสอบ</div><div class="stat-value">—</div></div>
-      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-label">อนุมัติแล้ว</div><div class="stat-value">—</div></div>
-      <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label">กำลังยืม</div><div class="stat-value">—</div></div>
-      <div class="stat-card"><div class="stat-icon">↩️</div><div class="stat-label">คืนแล้ว</div><div class="stat-value">—</div></div>
-    </div>
+        <button id="adminLoginButton" class="btn btn-primary" type="submit">
+          เข้าสู่ระบบ →
+        </button>
+      </form>
 
-    <section class="panel">
-      <div class="filter-panel">
-        <div>
-          <div class="filter-title">รายการคำขอยืมอุปกรณ์</div>
-          <div class="muted">ตรวจสอบและจัดการคำขอของนักเรียน</div>
-        </div>
-        <div class="filter-row">
-          <input id="adminSearch" type="search" placeholder="🔎 ค้นหาชื่อหรืออุปกรณ์">
-          <select id="adminStatusFilter">
-            <option value="all">ทุกสถานะ</option>
-            <option value="pending">รอตรวจสอบ</option>
-            <option value="approved">อนุมัติแล้ว</option>
-            <option value="rejected">ไม่อนุมัติ</option>
-            <option value="borrowed">รับอุปกรณ์แล้ว</option>
-            <option value="returned">คืนอุปกรณ์แล้ว</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="adminRequests" class="requests-list">
-        <div class="empty-state">
-          <div class="empty-icon">📭</div>
-          <strong>ยังไม่มีรายการแสดง</strong>
-          <p>เมื่อมีคำขอยืม รายการจะแสดงในบริเวณนี้</p>
-        </div>
-      </div>
+      <div id="adminLoginMessage" aria-live="polite"></div>
     </section>
 
-  </section>
-</main>
+    <!-- DASHBOARD -->
+    <section id="adminDashboard" class="hidden">
 
-<footer>
-  <strong>YEUMKEUN</strong> · ระบบจัดการยืม–คืนอุปกรณ์
-</footer>
+      <div class="dashboard-head">
+        <div>
+          <span class="eyebrow">YEUMKEUN MANAGEMENT</span>
+          <h1>จัดการระบบยืม–คืนอุปกรณ์</h1>
+          <p id="adminWelcome" class="muted">
+            ยินดีต้อนรับเข้าสู่ระบบผู้ดูแล
+          </p>
+        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/assets/js/database.js"></script>
-<script src="assets/assets/js/admin.js"></script>
+        <div class="dashboard-actions">
+          <button id="adminRefresh" class="btn btn-outline" type="button">
+            ↻ รีเฟรชข้อมูล
+          </button>
+          <button id="adminLogout" class="btn btn-dark" type="button">
+            ออกจากระบบ
+          </button>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div id="adminStats" class="stats">
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-label">คำขอทั้งหมด</div>
+          <div class="stat-value">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-label">รอตรวจสอบ</div>
+          <div class="stat-value">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-label">อนุมัติแล้ว</div>
+          <div class="stat-value">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-label">กำลังยืม</div>
+          <div class="stat-value">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">↩️</div>
+          <div class="stat-label">คืนแล้ว</div>
+          <div class="stat-value">—</div>
+        </div>
+      </div>
+
+      <!-- REQUESTS -->
+      <section class="panel">
+        <div class="filter-panel">
+          <div>
+            <div class="filter-title">รายการคำขอยืมอุปกรณ์</div>
+            <div class="muted">ตรวจสอบและจัดการคำขอของนักเรียน</div>
+          </div>
+
+          <div class="filter-row">
+            <input
+              id="adminSearch"
+              type="search"
+              placeholder="🔎 ค้นหาชื่อหรืออุปกรณ์"
+            >
+
+            <select id="adminStatusFilter">
+              <option value="all">ทุกสถานะ</option>
+              <option value="pending">รอตรวจสอบ</option>
+              <option value="approved">อนุมัติแล้ว</option>
+              <option value="rejected">ไม่อนุมัติ</option>
+              <option value="borrowed">รับอุปกรณ์แล้ว</option>
+              <option value="returned">คืนอุปกรณ์แล้ว</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="adminRequests" class="requests-list">
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <strong>ยังไม่มีรายการแสดง</strong>
+            <p>เมื่อมีคำขอยืม รายการจะแสดงในบริเวณนี้</p>
+          </div>
+        </div>
+      </section>
+
+    </section>
+  </main>
+
+  <footer>
+    <strong>YEUMKEUN</strong> · ระบบจัดการยืม–คืนอุปกรณ์
+  </footer>
+
+  <!-- โหลด Supabase ก่อน JavaScript ของระบบ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/assets/js/database.js"></script>
+  <script src="assets/assets/js/admin.js"></script>
+
 </body>
 </html>
