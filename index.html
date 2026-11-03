@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -51,11 +50,37 @@
       <div id="trackingResult"></div>
     </section>
 
-    <section class="card">
-      <h2>🔐 สำหรับครูและผู้ดูแล</h2>
-      <p>เข้าสู่ระบบจัดการคำขอยืม-คืนอุปกรณ์</p>
-      <button id="adminButton">เข้าสู่ระบบครู</button>
-    </section>
+    
+<section class="card" id="staffLogin">
+  <h2>🔐 เข้าสู่ระบบครูและผู้ดูแล</h2>
+
+  <form id="staffLoginForm">
+    <label>อีเมล</label>
+    <input
+      type="email"
+      id="staffEmail"
+      placeholder="กรอกอีเมล"
+      autocomplete="username"
+      required
+    >
+
+    <label>รหัสผ่าน</label>
+    <input
+      type="password"
+      id="staffPassword"
+      placeholder="กรอกรหัสผ่าน"
+      autocomplete="current-password"
+      required
+    >
+
+    <button type="submit" id="staffLoginButton">
+      เข้าสู่ระบบ
+    </button>
+  </form>
+
+  <div id="loginMessage"></div>
+</section>
+
   </main>
 
   <footer>
