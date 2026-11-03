@@ -1,417 +1,368 @@
 
-/* =========================================
-   YEUMKEUN - ADMIN SYSTEM
-   Version 2.0
-========================================= */
+/* ======================================
+   YEUMKEUN ADMIN SYSTEM
+   Separate Admin Dashboard
+====================================== */
 
 (() => {
-    "use strict";
+  "use strict";
 
-    const $ = (id) => document.getElementById(id);
+  const $ = id => document.getElementById(id);
 
-    let currentUser = null;
-    let currentProfile = null;
-    let requests = [];
+  const STATUS = {
+    pending: "รอตรวจสอบ",
+    approved: "อนุมัติแล้ว",
+    rejected: "ไม่อนุมัติ",
+    borrowed: "รับอุปกรณ์แล้ว",
+    returned: "คืนอุปกรณ์แล้ว"
+  };
 
-    function showMessage(message, type = "info") {
-        const box = $("loginMessage");
-        if (!box) return;
+  let currentUser = null;
+  let currentProfile = null;
+  let requests = [];
 
-        box.textContent = message;
-        box.style.display = "block";
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[char]);
+  }
 
-        const colors = {
-            info: "#eff6ff",
-            success: "#dcfce7",
-            error: "#fee2e2"
-        };
+  function showMessage(text, success = false) {
+    const box = $("adminLoginMessage");
+    if (!box) return;
 
-        box.style.background = colors[type] || colors.info;
-        box.style.padding = "12px";
-        box.style.borderRadius = "10px";
+    box.textContent = text;
+    box.className = success ? "admin-success" : "admin-error";
+    box.style.display = "block";
+  }
+
+  function showDashboard() {
+    $("adminLoginPanel").classList.add("hidden");
+    $("adminDashboard").classList.remove("hidden");
+
+    $("adminWelcome").textContent =
+      `ยินดีต้อนรับ ${currentProfile.full_name || currentUser.email}`;
+  }
+
+  function showLogin() {
+    $("adminDashboard").classList.add("hidden");
+    $("adminLoginPanel").classList.remove("hidden");
+  }
+
+  async function checkPermission(user) {
+    const { data, error } = await window.db
+      .from("profiles")
+      .select("id, full_name, role")
+      .eq("id", user.id)
+      .single();
+
+    if (error) throw error;
+
+    if (!data || !["teacher", "admin"].includes(data.role)) {
+      throw new Error(
+        "บัญชีนี้ยังไม่ได้รับสิทธิ์ครูหรือผู้ดูแลระบบ"
+      );
     }
 
-    function escapeHTML(value) {
-        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#039;"
-        })[char]);
+    currentUser = user;
+    currentProfile = data;
+  }
+
+  async function login(event) {
+    event.preventDefault();
+
+    const button = $("adminLoginButton");
+    button.disabled = true;
+    button.textContent = "กำลังเข้าสู่ระบบ...";
+
+    try {
+      if (!window.db) {
+        throw new Error("ไม่พบการเชื่อมต่อฐานข้อมูล กรุณาตรวจสอบ database.js");
+      }
+
+      const email = $("adminEmail").value.trim();
+      const password = $("adminPassword").value;
+
+      const { data, error } = await window.db.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      try {
+        await checkPermission(data.user);
+      } catch (permissionError) {
+        await window.db.auth.signOut();
+        currentUser = null;
+        currentProfile = null;
+        throw permissionError;
+      }
+
+      $("adminPassword").value = "";
+
+      // แสดง Dashboard ในหน้า admin.html
+      showDashboard();
+
+      showMessage("เข้าสู่ระบบสำเร็จ", true);
+
+      await loadRequests();
+
+    } catch (error) {
+      console.error("Login error:", error);
+      showMessage(error.message || "เข้าสู่ระบบไม่สำเร็จ");
+    } finally {
+      button.disabled = false;
+      button.textContent = "เข้าสู่ระบบ";
+    }
+  }
+
+  async function loadRequests() {
+    const list = $("adminRequests");
+    list.innerHTML = "<p>กำลังโหลดรายการคำขอ...</p>";
+
+    try {
+      const { data, error } = await window.db
+        .from("borrow_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      requests = data || [];
+
+      renderStats();
+      renderRequests();
+
+    } catch (error) {
+      console.error("Load error:", error);
+      list.innerHTML =
+        `<p>โหลดข้อมูลไม่สำเร็จ: ${escapeHTML(error.message)}</p>`;
+    }
+  }
+
+  function renderStats() {
+    const count = status =>
+      requests.filter(item => item.status === status).length;
+
+    $("adminStats").innerHTML = `
+      <div>
+        <strong>${requests.length}</strong>
+        <span>คำขอทั้งหมด</span>
+      </div>
+      <div>
+        <strong>${count("pending")}</strong>
+        <span>รอตรวจสอบ</span>
+      </div>
+      <div>
+        <strong>${count("approved")}</strong>
+        <span>อนุมัติแล้ว</span>
+      </div>
+      <div>
+        <strong>${count("returned")}</strong>
+        <span>คืนอุปกรณ์แล้ว</span>
+      </div>
+    `;
+  }
+
+  function renderRequests() {
+    const list = $("adminRequests");
+
+    const keyword = $("adminSearch").value.toLowerCase().trim();
+    const filter = $("adminStatusFilter").value;
+
+    const filtered = requests.filter(item => {
+      const text = [
+        item.student_name,
+        item.student_class,
+        item.equipment,
+        item.tracking_code
+      ].join(" ").toLowerCase();
+
+      return text.includes(keyword) &&
+        (filter === "all" || item.status === filter);
+    });
+
+    if (!filtered.length) {
+      list.innerHTML = "<p class='muted'>ไม่พบรายการคำขอ</p>";
+      return;
     }
 
-    function showDashboard(profile) {
-        $("staffDashboard")?.classList.remove("hidden");
+    list.innerHTML = filtered.map(item => {
+      let buttons = "";
 
-        const loginForm = $("staffLoginForm");
-        if (loginForm) loginForm.style.display = "none";
+      if (item.status === "pending") {
+        buttons = `
+          <button class="btn btn-primary"
+            data-id="${escapeHTML(item.id)}"
+            data-status="approved">อนุมัติ</button>
 
-        const welcome = $("staffWelcome");
-        if (welcome) {
-            welcome.textContent =
-                `ยินดีต้อนรับ ${profile.full_name || currentUser.email}`;
-        }
-
-        showMessage("เข้าสู่ระบบสำเร็จ", "success");
-    }
-
-    function hideDashboard() {
-        $("staffDashboard")?.classList.add("hidden");
-
-        const loginForm = $("staffLoginForm");
-        if (loginForm) loginForm.style.display = "";
-
-        const welcome = $("staffWelcome");
-        if (welcome) welcome.textContent = "ยินดีต้อนรับเข้าสู่ระบบ";
-    }
-
-    async function login(event) {
-        event.preventDefault();
-
-        const email = $("staffEmail")?.value.trim();
-        const password = $("staffPassword")?.value;
-
-        if (!email || !password) {
-            showMessage("กรุณากรอกอีเมลและรหัสผ่าน", "error");
-            return;
-        }
-
-        const button = $("staffLoginButton");
-        if (button) {
-            button.disabled = true;
-            button.textContent = "กำลังเข้าสู่ระบบ...";
-        }
-
-        try {
-            if (!window.db) {
-                throw new Error("ไม่พบการเชื่อมต่อฐานข้อมูล กรุณาตรวจสอบ database.js");
-            }
-
-            const { data, error } =
-                await window.db.auth.signInWithPassword({
-                    email,
-                    password
-                });
-
-            if (error) throw error;
-
-            currentUser = data.user;
-
-            const { data: profile, error: profileError } =
-                await window.db
-                    .from("profiles")
-                    .select("id, full_name, role")
-                    .eq("id", currentUser.id)
-                    .single();
-
-            if (profileError) throw profileError;
-
-            if (!["teacher", "admin"].includes(profile.role)) {
-                await window.db.auth.signOut();
-                currentUser = null;
-                throw new Error("บัญชีนี้ยังไม่ได้รับสิทธิ์ครูหรือผู้ดูแลระบบ");
-            }
-
-            currentProfile = profile;
-            showDashboard(profile);
-
-            await loadRequests();
-
-            $("staffPassword").value = "";
-
-        } catch (error) {
-            console.error("Login error:", error);
-
-            showMessage(
-                error.message || "เข้าสู่ระบบไม่สำเร็จ",
-                "error"
-            );
-
-            if (window.db && !currentProfile) {
-                await window.db.auth.signOut();
-            }
-
-        } finally {
-            if (button) {
-                button.disabled = false;
-                button.textContent = "เข้าสู่ระบบครู";
-            }
-        }
-    }
-
-    async function loadRequests() {
-        const list = $("requestsList");
-        if (!list) return;
-
-        list.innerHTML = "<p>กำลังโหลดข้อมูล...</p>";
-
-        try {
-            const { data, error } = await window.db
-                .from("borrow_requests")
-                .select("*")
-                .order("created_at", { ascending: false });
-
-            if (error) throw error;
-
-            requests = data || [];
-
-            renderStats();
-            renderRequests();
-
-        } catch (error) {
-            console.error("Load requests error:", error);
-            list.innerHTML =
-                `<p class="muted">โหลดข้อมูลไม่สำเร็จ: ${escapeHTML(error.message)}</p>`;
-        }
-    }
-
-    function renderStats() {
-        const box = $("requestStats");
-        if (!box) return;
-
-        const count = (status) =>
-            requests.filter(item => item.status === status).length;
-
-        box.innerHTML = `
-            <div>
-                <strong>${requests.length}</strong>
-                <span>คำขอทั้งหมด</span>
-            </div>
-            <div>
-                <strong>${count("pending")}</strong>
-                <span>รอตรวจสอบ</span>
-            </div>
-            <div>
-                <strong>${count("approved")}</strong>
-                <span>อนุมัติแล้ว</span>
-            </div>
-            <div>
-                <strong>${count("returned")}</strong>
-                <span>คืนอุปกรณ์แล้ว</span>
-            </div>
+          <button class="btn btn-danger-outline"
+            data-id="${escapeHTML(item.id)}"
+            data-status="rejected">ไม่อนุมัติ</button>
         `;
+      }
+
+      if (item.status === "approved") {
+        buttons = `
+          <button class="btn btn-primary"
+            data-id="${escapeHTML(item.id)}"
+            data-status="borrowed">ยืนยันรับอุปกรณ์</button>
+        `;
+      }
+
+      if (item.status === "borrowed") {
+        buttons = `
+          <button class="btn btn-primary"
+            data-id="${escapeHTML(item.id)}"
+            data-status="returned">ยืนยันคืนอุปกรณ์</button>
+        `;
+      }
+
+      return `
+        <article class="request-card">
+          <h3>${escapeHTML(item.equipment)}</h3>
+
+          <p><strong>สถานะ:</strong>
+            ${escapeHTML(STATUS[item.status] || item.status)}
+          </p>
+
+          <p><strong>นักเรียน:</strong>
+            ${escapeHTML(item.student_name)}</p>
+
+          <p><strong>ชั้น:</strong>
+            ${escapeHTML(item.student_class)}</p>
+
+          <p><strong>รหัสติดตาม:</strong>
+            ${escapeHTML(item.tracking_code)}</p>
+
+          <p><strong>วันยืม:</strong>
+            ${escapeHTML(item.borrow_date)}</p>
+
+          <p><strong>วันคืน:</strong>
+            ${escapeHTML(item.return_date)}</p>
+
+          <p><strong>วัตถุประสงค์:</strong>
+            ${escapeHTML(item.purpose || "-")}</p>
+
+          <div class="dashboard-actions">
+            ${buttons}
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  async function changeStatus(id, status) {
+    const names = {
+      approved: "อนุมัติ",
+      rejected: "ไม่อนุมัติ",
+      borrowed: "ยืนยันรับอุปกรณ์",
+      returned: "ยืนยันคืนอุปกรณ์"
+    };
+
+    if (!confirm(`ต้องการ${names[status]}ใช่หรือไม่?`)) {
+      return;
     }
 
-    function statusName(status) {
-        const names = {
-            pending: "รอตรวจสอบ",
-            approved: "อนุมัติแล้ว",
-            rejected: "ไม่อนุมัติ",
-            borrowed: "รับอุปกรณ์แล้ว",
-            returned: "คืนอุปกรณ์แล้ว"
-        };
+    try {
+      const { error } = await window.db
+        .from("borrow_requests")
+        .update({
+          status: status,
+          checked_by: currentUser.id
+        })
+        .eq("id", id);
 
-        return names[status] || status;
+      if (error) throw error;
+
+      alert("เปลี่ยนสถานะเรียบร้อยแล้ว");
+      await loadRequests();
+
+    } catch (error) {
+      console.error("Status error:", error);
+      alert("เปลี่ยนสถานะไม่สำเร็จ: " + error.message);
+    }
+  }
+
+  async function logout() {
+    if (!confirm("ต้องการออกจากระบบหรือไม่?")) return;
+
+    const { error } = await window.db.auth.signOut();
+
+    if (error) {
+      alert(error.message);
+      return;
     }
 
-    function renderRequests() {
-        const list = $("requestsList");
-        if (!list) return;
+    currentUser = null;
+    currentProfile = null;
+    requests = [];
 
-        const search =
-            ($("requestSearch")?.value || "").toLowerCase();
+    showLogin();
+    $("adminLoginMessage").textContent = "";
+  }
 
-        const filter =
-            $("statusFilter")?.value || "all";
+  async function restoreSession() {
+    try {
+      if (!window.db) {
+        showMessage("ไม่พบ Supabase กรุณาตรวจสอบ database.js");
+        return;
+      }
 
-        const filtered = requests.filter(item => {
-            const text = [
-                item.student_name,
-                item.student_class,
-                item.equipment,
-                item.tracking_code
-            ].join(" ").toLowerCase();
+      const { data, error } = await window.db.auth.getSession();
+      if (error) throw error;
 
-            return text.includes(search) &&
-                (filter === "all" || item.status === filter);
-        });
+      const user = data.session?.user;
+      if (!user) return;
 
-        if (!filtered.length) {
-            list.innerHTML = "<p class='muted'>ไม่พบรายการคำขอ</p>";
-            return;
-        }
+      await checkPermission(user);
+      showDashboard();
+      await loadRequests();
 
-        list.innerHTML = filtered.map(item => {
-            let actions = "";
+    } catch (error) {
+      console.error("Session error:", error);
 
-            if (item.status === "pending") {
-                actions = `
-                    <button class="btn btn-primary"
-                        data-status="approved"
-                        data-id="${escapeHTML(item.id)}">
-                        อนุมัติ
-                    </button>
-                    <button class="btn btn-danger-outline"
-                        data-status="rejected"
-                        data-id="${escapeHTML(item.id)}">
-                        ไม่อนุมัติ
-                    </button>
-                `;
-            }
+      if (window.db) {
+        await window.db.auth.signOut();
+      }
 
-            if (item.status === "approved") {
-                actions = `
-                    <button class="btn btn-primary"
-                        data-status="borrowed"
-                        data-id="${escapeHTML(item.id)}">
-                        ยืนยันรับอุปกรณ์
-                    </button>
-                `;
-            }
-
-            if (item.status === "borrowed") {
-                actions = `
-                    <button class="btn btn-primary"
-                        data-status="returned"
-                        data-id="${escapeHTML(item.id)}">
-                        ยืนยันคืนอุปกรณ์
-                    </button>
-                `;
-            }
-
-            return `
-                <article class="request-card">
-                    <h3>${escapeHTML(item.equipment)}</h3>
-                    <p><strong>นักเรียน:</strong>
-                        ${escapeHTML(item.student_name)}</p>
-                    <p><strong>ชั้น:</strong>
-                        ${escapeHTML(item.student_class || "-")}</p>
-                    <p><strong>รหัสติดตาม:</strong>
-                        ${escapeHTML(item.tracking_code)}</p>
-                    <p><strong>วันยืม:</strong>
-                        ${escapeHTML(item.borrow_date)}</p>
-                    <p><strong>วันคืน:</strong>
-                        ${escapeHTML(item.return_date)}</p>
-                    <p><strong>วัตถุประสงค์:</strong>
-                        ${escapeHTML(item.purpose || "-")}</p>
-                    <p><strong>สถานะ:</strong>
-                        ${escapeHTML(statusName(item.status))}</p>
-                    <div class="dashboard-actions">
-                        ${actions}
-                    </div>
-                </article>
-            `;
-        }).join("");
+      currentUser = null;
+      currentProfile = null;
+      showLogin();
+      showMessage(error.message || "กรุณาเข้าสู่ระบบใหม่");
     }
+  }
 
-    async function updateStatus(id, status) {
-        const labels = {
-            approved: "อนุมัติคำขอนี้",
-            rejected: "ไม่อนุมัติคำขอนี้",
-            borrowed: "ยืนยันการรับอุปกรณ์",
-            returned: "ยืนยันการคืนอุปกรณ์"
-        };
+  function init() {
+    $("adminLoginForm").addEventListener("submit", login);
 
-        if (!confirm(`ต้องการ${labels[status]}ใช่หรือไม่?`)) {
-            return;
-        }
+    $("adminLogout").addEventListener("click", logout);
 
-        try {
-            const { error } = await window.db
-                .from("borrow_requests")
-                .update({
-                    status: status,
-                    checked_by: currentUser.id
-                })
-                .eq("id", id);
+    $("adminRefresh").addEventListener("click", loadRequests);
 
-            if (error) throw error;
+    $("adminSearch").addEventListener("input", renderRequests);
 
-            alert("อัปเดตสถานะเรียบร้อยแล้ว");
-            await loadRequests();
+    $("adminStatusFilter").addEventListener("change", renderRequests);
 
-        } catch (error) {
-            console.error("Update status error:", error);
-            alert("ไม่สามารถเปลี่ยนสถานะได้: " + error.message);
-        }
-    }
+    $("adminRequests").addEventListener("click", event => {
+      const button = event.target.closest("[data-id][data-status]");
+      if (!button || !currentUser) return;
 
-    async function logout() {
-        if (!confirm("ต้องการออกจากระบบใช่หรือไม่?")) return;
+      changeStatus(button.dataset.id, button.dataset.status);
+    });
 
-        try {
-            const { error } = await window.db.auth.signOut();
-            if (error) throw error;
+    restoreSession();
+  }
 
-            currentUser = null;
-            currentProfile = null;
-            requests = [];
-
-            hideDashboard();
-            showMessage("ออกจากระบบแล้ว", "success");
-
-        } catch (error) {
-            alert("ออกจากระบบไม่สำเร็จ: " + error.message);
-        }
-    }
-
-    async function restoreSession() {
-        try {
-            if (!window.db) return;
-
-            const { data } = await window.db.auth.getSession();
-            const user = data?.session?.user;
-
-            if (!user) return;
-
-            currentUser = user;
-
-            const { data: profile, error } = await window.db
-                .from("profiles")
-                .select("id, full_name, role")
-                .eq("id", user.id)
-                .single();
-
-            if (error || !profile ||
-                !["teacher", "admin"].includes(profile.role)) {
-                await window.db.auth.signOut();
-                currentUser = null;
-                return;
-            }
-
-            currentProfile = profile;
-            showDashboard(profile);
-            await loadRequests();
-
-        } catch (error) {
-            console.error("Restore session error:", error);
-        }
-    }
-
-    function init() {
-        $("staffLoginForm")?.addEventListener("submit", login);
-
-        $("staffLogout")?.addEventListener("click", logout);
-
-        $("refreshRequests")?.addEventListener("click", loadRequests);
-
-        $("requestSearch")?.addEventListener("input", renderRequests);
-
-        $("statusFilter")?.addEventListener("change", renderRequests);
-
-        $("requestsList")?.addEventListener("click", (event) => {
-            const button = event.target.closest("[data-status][data-id]");
-            if (!button) return;
-
-            if (!currentUser) {
-                alert("กรุณาเข้าสู่ระบบก่อน");
-                return;
-            }
-
-            updateStatus(
-                button.dataset.id,
-                button.dataset.status
-            );
-        });
-
-        restoreSession();
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
-    } else {
-        init();
-    }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 
 })();
