@@ -142,6 +142,9 @@ footer {
 
   .card {
     padding: 18px;
+ body {
+    background: #ffdddd !important;
+}
   }
 
   button {
