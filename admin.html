@@ -1,1 +1,100 @@
 
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YEUMKEUN | Admin Dashboard</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <span class="brand-icon">📦</span>
+    <span><strong>YEUMKEUN</strong><small>ADMINISTRATION</small></span>
+  </a>
+  <nav><a href="index.html">กลับหน้าหลัก</a></nav>
+</header>
+
+<main class="page">
+
+  <section id="adminLoginPanel" class="panel" style="max-width:520px;margin:40px auto">
+    <div class="section-heading">
+      <span class="section-icon">🔐</span>
+      <div>
+        <h2>เข้าสู่ระบบครู / ผู้ดูแล</h2>
+        <p>ใช้บัญชีที่ได้รับสิทธิ์ในระบบ</p>
+      </div>
+    </div>
+
+    <form id="adminLoginForm" class="stack-form">
+      <label>อีเมล
+        <input id="adminEmail" type="email" required autocomplete="username">
+      </label>
+
+      <label>รหัสผ่าน
+        <input id="adminPassword" type="password" required autocomplete="current-password">
+      </label>
+
+      <button id="adminLoginButton" class="btn btn-primary" type="submit">
+        เข้าสู่ระบบ
+      </button>
+    </form>
+
+    <div id="adminLoginMessage" aria-live="polite"></div>
+  </section>
+
+  <section id="adminDashboard" class="panel hidden">
+
+    <div class="dashboard-head">
+      <div>
+        <span class="eyebrow">YEUMKEUN MANAGEMENT</span>
+        <h2>ระบบจัดการยืม–คืนอุปกรณ์</h2>
+        <p id="adminWelcome" class="muted"></p>
+      </div>
+
+      <div class="dashboard-actions">
+        <button id="adminRefresh" class="btn btn-outline" type="button">
+          ↻ รีเฟรช
+        </button>
+        <button id="adminLogout" class="btn btn-dark" type="button">
+          ออกจากระบบ
+        </button>
+      </div>
+    </div>
+
+    <div id="adminStats" class="stats"></div>
+
+    <div class="filter-row">
+      <input id="adminSearch" type="search" placeholder="ค้นหาชื่อนักเรียนหรืออุปกรณ์">
+      <select id="adminStatusFilter">
+        <option value="all">ทุกสถานะ</option>
+        <option value="pending">รอตรวจสอบ</option>
+        <option value="approved">อนุมัติแล้ว</option>
+        <option value="rejected">ไม่อนุมัติ</option>
+        <option value="borrowed">รับอุปกรณ์แล้ว</option>
+        <option value="returned">คืนอุปกรณ์แล้ว</option>
+      </select>
+    </div>
+
+    <div id="adminRequests" class="requests-list">
+      กำลังโหลดข้อมูล...
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  <strong>YEUMKEUN</strong>
+  <span>พื้นที่สำหรับครูและผู้ดูแลระบบ</span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/database.js"></script>
+<script src="assets/js/admin.js"></script>
+
+</body>
+</html>
+
