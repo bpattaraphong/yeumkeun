@@ -1,96 +1,488 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YEUMKEUN | ระบบยืม-คืนอุปกรณ์</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#101b3d">
+
+    <title>YEUMKEUN | ระบบยืม-คืนอุปกรณ์โรงเรียน</title>
+
+    <meta name="description" content="ระบบยืม-คืนอุปกรณ์โรงเรียน YEUMKEUN สำหรับนักเรียน ครู และผู้ดูแลระบบ">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
+
 <body>
 
-  <header class="header">
-    <h1>YEUMKEUN</h1>
-    <p>ระบบยืม-คืนอุปกรณ์โรงเรียน</p>
-  </header>
+    <!-- ================= HEADER ================= -->
+    <header class="topbar">
 
-  <main class="container">
-    <section class="card">
-      <h2>📦 ส่งคำขอยืมอุปกรณ์</h2>
+        <a href="#" class="brand">
+            <span class="brand-icon">📦</span>
 
-      <form id="borrowForm">
-        <label>ชื่อ-นามสกุล</label>
-        <input id="studentName" required placeholder="กรอกชื่อ-นามสกุล">
+            <span>
+                <strong>YEUMKEUN</strong>
+                <small>ระบบยืม-คืนอุปกรณ์โรงเรียน</small>
+            </span>
+        </a>
 
-        <label>ระดับชั้น / ห้อง</label>
-        <input id="studentClass" required placeholder="เช่น ม.1/2">
+        <nav>
+            <a href="#borrow">ส่งคำขอยืม</a>
+            <a href="#tracking">ติดตามสถานะ</a>
+            <a href="#staff">เข้าสู่ระบบครู</a>
+        </nav>
 
-        <label>อุปกรณ์ที่ต้องการยืม</label>
-        <input id="equipment" required placeholder="ระบุชื่ออุปกรณ์">
+    </header>
 
-        <label>วันและเวลาที่ยืม</label>
-        <input id="borrowDate" type="datetime-local" required>
 
-        <label>วันและเวลาที่คืน</label>
-        <input id="returnDate" type="datetime-local" required>
+    <!-- ================= MAIN ================= -->
+    <main class="page">
 
-        <label>วัตถุประสงค์</label>
-        <textarea id="purpose" required placeholder="ระบุวัตถุประสงค์"></textarea>
+        <!-- HERO -->
+        <section class="hero">
 
-        <button type="submit">ส่งคำขอยืม</button>
-      </form>
+            <div class="hero-copy">
 
-      <div id="result"></div>
-    </section>
+                <span class="eyebrow">
+                    SCHOOL EQUIPMENT MANAGEMENT
+                </span>
 
-    <section class="card">
-      <h2>🔎 ติดตามสถานะการยืม</h2>
-      <p>ใช้รหัสติดตามที่ได้รับหลังส่งคำขอ</p>
-      <input id="trackingCode" placeholder="กรอกรหัสติดตาม">
-      <button id="trackButton">ตรวจสอบสถานะ</button>
-      <div id="trackingResult"></div>
-    </section>
+                <h1>
+                    ยืมง่าย คืนสะดวก<br>
+                    <span>จัดการได้ในที่เดียว</span>
+                </h1>
 
-    
-<section class="card" id="staffLogin">
-  <h2>🔐 เข้าสู่ระบบครูและผู้ดูแล</h2>
+                <p>
+                    ระบบออนไลน์สำหรับส่งคำขอยืมอุปกรณ์
+                    ตรวจสอบการอนุมัติ และติดตามสถานะการยืม-คืน
+                    ได้อย่างสะดวกและรวดเร็ว
+                </p>
 
-  <form id="staffLoginForm">
-    <label>อีเมล</label>
-    <input
-      type="email"
-      id="staffEmail"
-      placeholder="กรอกอีเมล"
-      autocomplete="username"
-      required
-    >
+                <a href="#borrow" class="primary-link">
+                    เริ่มต้นส่งคำขอยืม →
+                </a>
 
-    <label>รหัสผ่าน</label>
-    <input
-      type="password"
-      id="staffPassword"
-      placeholder="กรอกรหัสผ่าน"
-      autocomplete="current-password"
-      required
-    >
+            </div>
 
-    <button type="submit" id="staffLoginButton">
-      เข้าสู่ระบบ
-    </button>
-  </form>
+            <div class="hero-art" aria-hidden="true">
+                <div class="art-circle"></div>
+                <div class="art-box">📦</div>
+                <span class="float-tag tag-one">✓ อนุมัติคำขอ</span>
+                <span class="float-tag tag-two">↻ ติดตามสถานะ</span>
+            </div>
 
-  <div id="loginMessage"></div>
-</section>
+        </section>
 
-  </main>
 
-  <footer>
-    <p>YEUMKEUN © ระบบยืม-คืนอุปกรณ์โรงเรียน</p>
-  </footer>
+        <!-- ================= STUDENT AREA ================= -->
+        <section class="content-grid">
 
-  <script src="assets/js/database.js"></script>
-  <script src="assets/js/app.js"></script>
-  <script src="assets/js/student.js"></script>
-  <script src="assets/js/admin.js"></script>
+            <!-- BORROW FORM -->
+            <section class="panel" id="borrow">
+
+                <div class="section-heading">
+
+                    <span class="section-icon">📝</span>
+
+                    <div>
+                        <h2>ส่งคำขอยืมอุปกรณ์</h2>
+                        <p>กรอกข้อมูลให้ครบถ้วนก่อนส่งคำขอ</p>
+                    </div>
+
+                </div>
+
+
+                <form id="borrowForm" class="form-grid">
+
+                    <label>
+                        ชื่อ-นามสกุล
+                        <input
+                            type="text"
+                            id="studentName"
+                            placeholder="กรอกชื่อ-นามสกุล"
+                            maxlength="120"
+                            required
+                        >
+                    </label>
+
+
+                    <label>
+                        ระดับชั้น / ห้อง
+                        <input
+                            type="text"
+                            id="studentClass"
+                            placeholder="เช่น ม.1/2"
+                            maxlength="40"
+                            required
+                        >
+                    </label>
+
+
+                    <label class="full">
+                        อุปกรณ์ที่ต้องการยืม
+                        <input
+                            type="text"
+                            id="equipment"
+                            placeholder="ระบุชื่ออุปกรณ์และจำนวน"
+                            maxlength="180"
+                            required
+                        >
+                    </label>
+
+
+                    <label>
+                        วันและเวลาที่ยืม
+                        <input
+                            type="datetime-local"
+                            id="borrowDate"
+                            required
+                        >
+                    </label>
+
+
+                    <label>
+                        วันและเวลาที่คืน
+                        <input
+                            type="datetime-local"
+                            id="returnDate"
+                            required
+                        >
+                    </label>
+
+
+                    <label class="full">
+                        วัตถุประสงค์ในการยืม
+                        <textarea
+                            id="purpose"
+                            rows="3"
+                            maxlength="1000"
+                            placeholder="ระบุวัตถุประสงค์ในการใช้งาน"
+                            required
+                        ></textarea>
+                    </label>
+
+
+                    <div class="full">
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            id="borrowSubmit"
+                        >
+                            ส่งคำขอยืม →
+                        </button>
+                    </div>
+
+                </form>
+
+
+                <!-- ผลการส่งคำขอ -->
+                <div
+                    id="borrowResult"
+                    class="notice"
+                    aria-live="polite"
+                ></div>
+
+            </section>
+
+
+
+            <!-- TRACKING -->
+            <section class="panel" id="tracking">
+
+                <div class="section-heading">
+
+                    <span class="section-icon">🔎</span>
+
+                    <div>
+                        <h2>ติดตามสถานะคำขอ</h2>
+                        <p>ตรวจสอบผลการอนุมัติด้วยรหัสติดตาม</p>
+                    </div>
+
+                </div>
+
+
+                <form id="trackingForm" class="stack-form">
+
+                    <label>
+                        รหัสติดตาม
+                        <input
+                            type="text"
+                            id="trackingCode"
+                            placeholder="กรอกรหัสติดตาม"
+                            required
+                        >
+                    </label>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-dark"
+                        id="trackSubmit"
+                    >
+                        ตรวจสอบสถานะ
+                    </button>
+
+                </form>
+
+
+                <div
+                    id="trackingResult"
+                    class="notice"
+                    aria-live="polite"
+                ></div>
+
+
+                <div class="status-guide">
+
+                    <h3>ความหมายของสถานะ</h3>
+
+                    <p>
+                        <span class="status-dot pending"></span>
+                        รอตรวจสอบ
+                    </p>
+
+                    <p>
+                        <span class="status-dot approved"></span>
+                        อนุมัติแล้ว
+                    </p>
+
+                    <p>
+                        <span class="status-dot rejected"></span>
+                        ไม่อนุมัติ
+                    </p>
+
+                    <p>
+                        <span class="status-dot borrowed"></span>
+                        รับอุปกรณ์แล้ว
+                    </p>
+
+                    <p>
+                        <span class="status-dot returned"></span>
+                        คืนอุปกรณ์สำเร็จ
+                    </p>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+
+        <!-- ================= STAFF LOGIN ================= -->
+        <section class="panel staff-panel" id="staff">
+
+            <div class="section-heading">
+
+                <span class="section-icon">🔐</span>
+
+                <div>
+                    <h2>เข้าสู่ระบบครูและผู้ดูแล</h2>
+                    <p>
+                        สำหรับครูและผู้ดูแลระบบที่มีบัญชีผู้ใช้งานแล้ว
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- LOGIN FORM -->
+            <!-- ช่องอีเมลและรหัสผ่านแสดงอยู่ตลอดเวลา -->
+
+            <form id="staffLoginForm" class="login-grid">
+
+                <label>
+                    อีเมลผู้ใช้งาน
+
+                    <input
+                        type="email"
+                        id="staffEmail"
+                        placeholder="กรอกอีเมล"
+                        autocomplete="username"
+                        required
+                    >
+                </label>
+
+
+                <label>
+                    รหัสผ่าน
+
+                    <input
+                        type="password"
+                        id="staffPassword"
+                        placeholder="กรอกรหัสผ่าน"
+                        autocomplete="current-password"
+                        required
+                    >
+                </label>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary login-button"
+                    id="staffLoginButton"
+                >
+                    เข้าสู่ระบบครู
+                </button>
+
+            </form>
+
+
+            <!-- LOGIN MESSAGE -->
+            <div
+                id="loginMessage"
+                class="notice"
+                aria-live="polite"
+            ></div>
+
+
+
+            <!-- ================= STAFF DASHBOARD ================= -->
+            <section id="staffDashboard" class="dashboard hidden">
+
+                <div class="dashboard-head">
+
+                    <div>
+                        <span class="eyebrow">STAFF DASHBOARD</span>
+
+                        <h2>จัดการคำขอยืม-คืนอุปกรณ์</h2>
+
+                        <p id="staffWelcome">
+                            ยินดีต้อนรับเข้าสู่ระบบ
+                        </p>
+                    </div>
+
+
+                    <div class="dashboard-actions">
+
+                        <button
+                            type="button"
+                            class="btn btn-outline"
+                            id="refreshRequests"
+                        >
+                            ↻ โหลดข้อมูลใหม่
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="btn btn-danger-outline"
+                            id="staffLogout"
+                        >
+                            ออกจากระบบ
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- สรุปจำนวนคำขอ -->
+                <div class="stats" id="requestStats">
+
+                    <!-- JavaScript แสดงข้อมูล -->
+
+                </div>
+
+
+                <!-- ค้นหาและกรอง -->
+                <div class="filter-row">
+
+                    <input
+                        type="search"
+                        id="requestSearch"
+                        placeholder="ค้นหาชื่อนักเรียนหรืออุปกรณ์"
+                    >
+
+
+                    <select
+                        id="statusFilter"
+                        aria-label="กรองสถานะคำขอ"
+                    >
+
+                        <option value="all">ทุกสถานะ</option>
+
+                        <option value="pending">
+                            รอตรวจสอบ
+                        </option>
+
+                        <option value="approved">
+                            อนุมัติแล้ว
+                        </option>
+
+                        <option value="rejected">
+                            ไม่อนุมัติ
+                        </option>
+
+                        <option value="borrowed">
+                            รับอุปกรณ์แล้ว
+                        </option>
+
+                        <option value="returned">
+                            คืนสำเร็จ
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- รายการคำขอ -->
+                <div
+                    id="requestsList"
+                    class="requests-list"
+                >
+
+                    <p class="muted">
+                        รายการคำขอจะแสดงที่นี่หลังเข้าสู่ระบบ
+                    </p>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer>
+
+        <strong>YEUMKEUN</strong>
+
+        <span>
+            © ระบบยืม-คืนอุปกรณ์โรงเรียน
+        </span>
+
+    </footer>
+
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <!-- Supabase SDK ต้องโหลดก่อน database.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- เชื่อมต่อฐานข้อมูล -->
+    <script src="assets/js/database.js"></script>
+
+    <!-- ระบบหลัก -->
+    <script src="assets/js/app.js"></script>
+
+    <!-- ระบบนักเรียน -->
+    <script src="assets/js/student.js"></script>
+
+    <!-- ระบบครูและผู้ดูแล -->
+    <script src="assets/js/admin.js"></script>
+
 </body>
 </html>
-```
