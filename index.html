@@ -1,1 +1,71 @@
+```html
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YEUMKEUN | ระบบยืม-คืนอุปกรณ์</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
 
+  <header class="header">
+    <h1>YEUMKEUN</h1>
+    <p>ระบบยืม-คืนอุปกรณ์โรงเรียน</p>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>📦 ส่งคำขอยืมอุปกรณ์</h2>
+
+      <form id="borrowForm">
+        <label>ชื่อ-นามสกุล</label>
+        <input id="studentName" required placeholder="กรอกชื่อ-นามสกุล">
+
+        <label>ระดับชั้น / ห้อง</label>
+        <input id="studentClass" required placeholder="เช่น ม.1/2">
+
+        <label>อุปกรณ์ที่ต้องการยืม</label>
+        <input id="equipment" required placeholder="ระบุชื่ออุปกรณ์">
+
+        <label>วันและเวลาที่ยืม</label>
+        <input id="borrowDate" type="datetime-local" required>
+
+        <label>วันและเวลาที่คืน</label>
+        <input id="returnDate" type="datetime-local" required>
+
+        <label>วัตถุประสงค์</label>
+        <textarea id="purpose" required placeholder="ระบุวัตถุประสงค์"></textarea>
+
+        <button type="submit">ส่งคำขอยืม</button>
+      </form>
+
+      <div id="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>🔎 ติดตามสถานะการยืม</h2>
+      <p>ใช้รหัสติดตามที่ได้รับหลังส่งคำขอ</p>
+      <input id="trackingCode" placeholder="กรอกรหัสติดตาม">
+      <button id="trackButton">ตรวจสอบสถานะ</button>
+      <div id="trackingResult"></div>
+    </section>
+
+    <section class="card">
+      <h2>🔐 สำหรับครูและผู้ดูแล</h2>
+      <p>เข้าสู่ระบบจัดการคำขอยืม-คืนอุปกรณ์</p>
+      <button id="adminButton">เข้าสู่ระบบครู</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>YEUMKEUN © ระบบยืม-คืนอุปกรณ์โรงเรียน</p>
+  </footer>
+
+  <script src="assets/js/database.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/student.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>
+```
