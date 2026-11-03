@@ -2,19 +2,452 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>YEUMKEUN | ระบบยืม-คืนอุปกรณ์</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YEUMKEUN | ระบบยืม–คืนอุปกรณ์</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/assets/css/style.css">
+
+<style>
+:root {
+  --student-bg:#f3f6fc;
+  --student-navy:#101d36;
+  --student-blue:#3568dc;
+  --student-text:#17233d;
+  --student-muted:#718096;
+  --student-border:#e7ecf3;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  margin:0;
+  background:var(--student-bg);
+  color:var(--student-text);
+  font-family:'Prompt',sans-serif;
+}
+button,input,textarea { font:inherit; }
+.topbar {
+  min-height:75px;
+  padding:12px max(4%,calc((100% - 1160px)/2));
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  background:var(--student-navy);
+  color:white;
+}
+.brand {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:white;
+  text-decoration:none;
+}
+.brand-icon {
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  background:#29436b;
+  border-radius:13px;
+  font-size:23px;
+}
+.brand strong {
+  display:block;
+  font-size:19px;
+  letter-spacing:1px;
+}
+.brand small {
+  display:block;
+  color:#a9bbd8;
+  font-size:10px;
+  letter-spacing:1.5px;
+}
+nav {
+  display:flex;
+  align-items:center;
+  gap:25px;
+}
+nav a {
+  color:#dbeafe;
+  font-size:13px;
+  text-decoration:none;
+}
+nav a:hover { color:white; }
+.menu-toggle {
+  display:none;
+  background:#29436b;
+  color:white;
+  border:0;
+  padding:9px 12px;
+  border-radius:9px;
+}
+.page {
+  width:min(1160px,92%);
+  margin:32px auto 55px;
+}
+.hero {
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  align-items:center;
+  min-height:310px;
+  padding:45px 55px;
+  color:white;
+  background:linear-gradient(120deg,#14213d,#244c87);
+  border-radius:24px;
+  box-shadow:0 14px 35px rgba(24,48,90,.14);
+}
+.hero::after {
+  content:"";
+  position:absolute;
+  width:360px;
+  height:360px;
+  right:-100px;
+  top:-160px;
+  border-radius:50%;
+  background:rgba(255,255,255,.055);
+}
+.hero-copy { position:relative; z-index:1; }
+.eyebrow {
+  color:#9fc2ff;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:2px;
+}
+.hero h1 {
+  margin:14px 0 10px;
+  color:white;
+  font-size:36px;
+  line-height:1.4;
+}
+.hero h1 span { color:#8db8ff; }
+.hero p {
+  max-width:480px;
+  color:#d4e1f5;
+  font-size:14px;
+  line-height:1.8;
+}
+.primary-link {
+  display:inline-flex;
+  margin-top:16px;
+  padding:12px 20px;
+  color:#17315b;
+  background:white;
+  border-radius:11px;
+  font-size:13px;
+  font-weight:600;
+  text-decoration:none;
+}
+.hero-art {
+  position:relative;
+  min-height:200px;
+  display:grid;
+  place-items:center;
+}
+.art-circle {
+  width:205px;
+  height:205px;
+  position:absolute;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:50%;
+  background:rgba(255,255,255,.07);
+}
+.art-box {
+  position:relative;
+  z-index:1;
+  width:130px;
+  height:130px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:30px;
+  font-size:65px;
+  transform:rotate(-5deg);
+}
+.float-tag {
+  position:absolute;
+  z-index:2;
+  padding:8px 13px;
+  color:white;
+  background:#3568dc;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:9px;
+  font-size:10px;
+  letter-spacing:1px;
+}
+.tag-one { top:25px; right:10px; }
+.tag-two { bottom:20px; left:10px; }
+
+.intro-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin:32px 0 17px;
+}
+.intro-row h2 {
+  margin:0;
+  font-size:21px;
+}
+.intro-row p {
+  margin:4px 0 0;
+  color:var(--student-muted);
+  font-size:12px;
+}
+.steps {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:13px;
+  margin-bottom:25px;
+}
+.step {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:15px;
+  background:white;
+  border:1px solid var(--student-border);
+  border-radius:14px;
+}
+.step-number {
+  width:35px;
+  height:35px;
+  flex-shrink:0;
+  display:grid;
+  place-items:center;
+  color:var(--student-blue);
+  background:#edf3ff;
+  border-radius:11px;
+  font-weight:700;
+}
+.step strong { display:block; font-size:12px; }
+.step small { color:var(--student-muted); font-size:10px; }
+
+.content-grid {
+  display:grid;
+  grid-template-columns:1.35fr .85fr;
+  align-items:start;
+  gap:20px;
+}
+.panel {
+  padding:25px;
+  background:white;
+  border:1px solid var(--student-border);
+  border-radius:18px;
+  box-shadow:0 5px 22px rgba(23,42,80,.045);
+}
+.section-heading {
+  display:flex;
+  align-items:center;
+  gap:13px;
+  margin-bottom:23px;
+}
+.section-icon {
+  width:45px;
+  height:45px;
+  flex-shrink:0;
+  display:grid;
+  place-items:center;
+  background:#edf3ff;
+  border-radius:13px;
+  font-size:21px;
+}
+.section-heading h2 {
+  margin:0;
+  font-size:18px;
+}
+.section-heading p {
+  margin:4px 0 0;
+  color:var(--student-muted);
+  font-size:12px;
+}
+.form-section-title {
+  margin:19px 0 12px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--student-border);
+  color:var(--student-blue);
+  font-size:12px;
+  font-weight:600;
+}
+.form-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+.form-grid label,.stack-form label {
+  display:block;
+  color:#34415a;
+  font-size:12px;
+  font-weight:500;
+}
+.form-grid input,.form-grid textarea,
+.stack-form input {
+  display:block;
+  width:100%;
+  margin-top:7px;
+  padding:12px 13px;
+  color:var(--student-text);
+  background:#fbfcff;
+  border:1px solid var(--student-border);
+  border-radius:10px;
+  outline:none;
+  font-size:13px;
+}
+.form-grid input:focus,.form-grid textarea:focus,
+.stack-form input:focus {
+  border-color:var(--student-blue);
+  box-shadow:0 0 0 3px rgba(53,104,220,.09);
+}
+.form-grid textarea {
+  min-height:100px;
+  resize:vertical;
+}
+.full { grid-column:1/-1; }
+.btn {
+  width:100%;
+  min-height:45px;
+  padding:11px 15px;
+  border:0;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+.btn-primary {
+  color:white;
+  background:var(--student-blue);
+}
+.btn-dark {
+  color:white;
+  background:var(--student-navy);
+}
+.btn:disabled { opacity:.6; cursor:wait; }
+.notice {
+  margin-top:15px;
+  padding:12px;
+  border-radius:10px;
+  background:#f3f6fc;
+  color:#34415a;
+  font-size:12px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.stack-form {
+  display:grid;
+  gap:14px;
+}
+.status-guide {
+  margin-top:24px;
+  padding:16px;
+  background:#f7f9fd;
+  border-radius:12px;
+}
+.status-guide h3 {
+  margin:0 0 12px;
+  font-size:13px;
+}
+.status-guide p {
+  margin:9px 0;
+  color:#526078;
+  font-size:12px;
+}
+.staff-panel {
+  margin-top:20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.staff-panel .section-heading { margin:0; }
+.staff-panel .btn {
+  width:auto;
+  white-space:nowrap;
+}
+footer {
+  padding:25px 15px;
+  color:var(--student-muted);
+  text-align:center;
+  font-size:12px;
+}
+footer strong {
+  display:block;
+  color:var(--student-text);
+  font-size:14px;
+}
+@media(max-width:800px) {
+  .content-grid { grid-template-columns:1fr; }
+  .hero { padding:35px; }
+  .hero h1 { font-size:29px; }
+}
+@media(max-width:600px) {
+  .topbar {
+    padding:12px 4%;
+    flex-wrap:wrap;
+  }
+  .menu-toggle { display:block; }
+  nav {
+    display:none;
+    width:100%;
+    flex-direction:column;
+    align-items:stretch;
+    gap:0;
+  }
+  nav:not(.hidden) { display:flex; }
+  nav a {
+    padding:12px 4px;
+    border-top:1px solid rgba(255,255,255,.1);
+  }
+  .page {
+    width:94%;
+    margin-top:18px;
+  }
+  .hero {
+    grid-template-columns:1fr;
+    min-height:0;
+    padding:27px 23px;
+    border-radius:18px;
+  }
+  .hero h1 { font-size:27px; }
+  .hero-art { min-height:150px; }
+  .art-circle { width:140px; height:140px; }
+  .art-box { width:95px; height:95px; font-size:48px; }
+  .tag-one { right:15%; top:5px; }
+  .tag-two { left:15%; bottom:5px; }
+  .intro-row h2 { font-size:18px; }
+  .steps { grid-template-columns:1fr; gap:8px; }
+  .panel { padding:18px; }
+  .content-grid { gap:15px; }
+  .form-grid { grid-template-columns:1fr; }
+  .full { grid-column:auto; }
+  .staff-panel {
+    align-items:stretch;
+    flex-direction:column;
+  }
+  .staff-panel .btn { width:100%; }
+}
+</style>
 </head>
+
 <body>
 
 <header class="topbar">
   <a class="brand" href="index.html">
     <span class="brand-icon">📦</span>
-    <span><strong>YEUMKEUN</strong><small>SCHOOL EQUIPMENT SYSTEM</small></span>
+    <span>
+      <strong>YEUMKEUN</strong>
+      <small>SCHOOL EQUIPMENT SYSTEM</small>
+    </span>
   </a>
-  <nav>
+
+  <button id="menuToggle" class="menu-toggle" type="button">☰ เมนู</button>
+
+  <nav id="mainMenu">
     <a href="#borrow">ขอยืมอุปกรณ์</a>
     <a href="#tracking">ติดตามคำขอ</a>
     <a href="admin.html">สำหรับครู / แอดมิน</a>
@@ -22,13 +455,16 @@
 </header>
 
 <main class="page">
+
   <section class="hero">
     <div class="hero-copy">
       <span class="eyebrow">SCHOOL EQUIPMENT MANAGEMENT</span>
-      <h1>ระบบยืม–คืนอุปกรณ์<br><span>YEUMKEUN</span></h1>
-      <p>ระบบบริการยืมและคืนอุปกรณ์สำหรับนักเรียนและบุคลากร</p>
+      <h1>ยืมง่าย คืนสะดวก<br><span>ครบจบในระบบเดียว</span></h1>
+      <p>ระบบบริการยืมและคืนอุปกรณ์สำหรับนักเรียนและบุคลากร
+      ส่งคำขอ ตรวจสอบสถานะ และรอรับการอนุมัติได้ผ่านเว็บไซต์</p>
       <a class="primary-link" href="#borrow">เริ่มยื่นคำขอ →</a>
     </div>
+
     <div class="hero-art">
       <div class="art-circle"></div>
       <div class="art-box">📦</div>
@@ -37,27 +473,59 @@
     </div>
   </section>
 
+  <div class="intro-row">
+    <div>
+      <h2>บริการยืม–คืนอุปกรณ์</h2>
+      <p>ทำรายการได้ง่าย ๆ ใน 3 ขั้นตอน</p>
+    </div>
+  </div>
+
+  <section class="steps">
+    <div class="step">
+      <div class="step-number">01</div>
+      <div><strong>กรอกคำขอ</strong><small>ระบุข้อมูลและอุปกรณ์</small></div>
+    </div>
+    <div class="step">
+      <div class="step-number">02</div>
+      <div><strong>รอการอนุมัติ</strong><small>ครูตรวจสอบคำขอ</small></div>
+    </div>
+    <div class="step">
+      <div class="step-number">03</div>
+      <div><strong>รับและคืนอุปกรณ์</strong><small>ตามวันเวลาที่กำหนด</small></div>
+    </div>
+  </section>
+
   <div class="content-grid">
+
+    <!-- BORROW FORM -->
     <section class="panel" id="borrow">
       <div class="section-heading">
         <span class="section-icon">📝</span>
         <div>
           <h2>แบบฟอร์มขอยืมอุปกรณ์</h2>
-          <p>กรอกข้อมูลเพื่อส่งคำขอยืม</p>
+          <p>กรอกข้อมูลให้ครบถ้วนก่อนส่งคำขอ</p>
         </div>
       </div>
 
       <form id="borrowForm" class="form-grid">
-        <label>ชื่อ–นามสกุล
-          <input id="studentName" required>
+
+        <div class="full form-section-title">ข้อมูลผู้ยืม</div>
+
+        <label class="full">ชื่อ–นามสกุล
+          <input id="studentName" type="text" required
+            placeholder="กรอกชื่อและนามสกุล">
         </label>
 
-        <label>ระดับชั้น / ห้อง
-          <input id="studentClass" required placeholder="เช่น ม.1/1">
+        <label class="full">ระดับชั้น / ห้อง
+          <input id="studentClass" type="text" required
+            placeholder="เช่น ม.1/1">
         </label>
+
+        <div class="full form-section-title">รายละเอียดการยืม</div>
 
         <label class="full">อุปกรณ์ที่ต้องการยืม
-          <input id="equipment" required placeholder="ระบุชื่ออุปกรณ์และจำนวน">
+          <input id="equipment" type="text" required
+            placeholder="ระบุชื่ออุปกรณ์และจำนวน">
         </label>
 
         <label>วันที่ยืม
@@ -68,47 +536,53 @@
           <input id="returnDate" type="date" required>
         </label>
 
-        <label class="full">วัตถุประสงค์
-          <textarea id="purpose" required></textarea>
+        <label class="full">วัตถุประสงค์ในการยืม
+          <textarea id="purpose" required
+            placeholder="อธิบายว่านำอุปกรณ์ไปใช้ทำอะไร"></textarea>
         </label>
 
         <button id="borrowSubmit" class="btn btn-primary full" type="submit">
-          ส่งคำขอยืมอุปกรณ์
+          ส่งคำขอยืมอุปกรณ์ →
         </button>
+
       </form>
 
-      <div id="borrowResult" class="notice"></div>
+      <div id="borrowResult" class="notice" aria-live="polite"></div>
     </section>
 
+    <!-- TRACKING -->
     <section class="panel" id="tracking">
       <div class="section-heading">
         <span class="section-icon">🔎</span>
         <div>
           <h2>ติดตามสถานะคำขอ</h2>
-          <p>กรอกรหัสติดตามที่ได้รับ</p>
+          <p>ตรวจสอบผลการพิจารณาคำขอยืม</p>
         </div>
       </div>
 
       <form id="trackingForm" class="stack-form">
-        <label>รหัสติดตาม
-          <input id="trackingCode" required>
+        <label>รหัสติดตามคำขอ
+          <input id="trackingCode" type="text" required
+            placeholder="กรอกรหัสติดตามที่ได้รับ">
         </label>
+
         <button id="trackSubmit" class="btn btn-dark" type="submit">
           ตรวจสอบสถานะ
         </button>
       </form>
 
-      <div id="trackingResult" class="notice"></div>
+      <div id="trackingResult" class="notice" aria-live="polite"></div>
 
       <div class="status-guide">
-        <h3>สถานะคำขอ</h3>
-        <p>🟡 รอตรวจสอบ</p>
-        <p>🟢 อนุมัติแล้ว</p>
-        <p>🔴 ไม่อนุมัติ</p>
-        <p>🔵 รับอุปกรณ์แล้ว</p>
-        <p>🟢 คืนอุปกรณ์แล้ว</p>
+        <h3>ความหมายของสถานะ</h3>
+        <p>🟡 รอตรวจสอบ — ครูกำลังพิจารณา</p>
+        <p>🟢 อนุมัติแล้ว — สามารถติดต่อรับอุปกรณ์</p>
+        <p>🔴 ไม่อนุมัติ — คำขอไม่ได้รับการอนุมัติ</p>
+        <p>🔵 รับอุปกรณ์แล้ว — อยู่ระหว่างการยืม</p>
+        <p>🟢 คืนอุปกรณ์แล้ว — เสร็จสิ้นรายการ</p>
       </div>
     </section>
+
   </div>
 
   <section class="panel staff-panel">
@@ -116,13 +590,12 @@
       <span class="section-icon">🔐</span>
       <div>
         <h2>พื้นที่สำหรับครูและผู้ดูแลระบบ</h2>
-        <p>เข้าสู่ระบบเพื่อจัดการคำขอยืม–คืน</p>
+        <p>เข้าสู่ระบบเพื่อจัดการคำขอยืม–คืนอุปกรณ์</p>
       </div>
     </div>
-    <a class="btn btn-primary" href="admin.html">
-      เข้าสู่ระบบแอดมิน →
-    </a>
+    <a class="btn btn-primary" href="admin.html">เข้าสู่ระบบแอดมิน →</a>
   </section>
+
 </main>
 
 <footer>
